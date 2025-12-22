@@ -96,7 +96,7 @@ export function NavUser({ user, userRole }: NavUserProps) {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/settings/profile" className="cursor-pointer">
+                <Link href="/settings" className="cursor-pointer">
                   <User />
                   Profile
                 </Link>

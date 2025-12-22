@@ -26,11 +26,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   // Get user profile with role
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('users')
     .select('full_name, avatar_url, role')
     .eq('id', user.id)
     .single()
+
+  if (profileError) {
+    console.error('Failed to fetch user profile:', profileError)
+  }
 
   const userRole = (profile?.role as UserRole) || 'writer'
 
