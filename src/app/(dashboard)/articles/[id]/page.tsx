@@ -246,7 +246,7 @@ export default function ArticleDetailPage() {
     }
   }
 
-  // Checklist mutation
+  // Checklist mutation with optimistic update
   const checklistMutation = useMutation({
     mutationFn: async ({ itemId, completed }: { itemId: string; completed: boolean }) => {
       if (completed) {
@@ -270,11 +270,39 @@ export default function ArticleDetailPage() {
         }
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.articleChecklist(articleId) })
+    onMutate: async ({ itemId, completed }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: queryKeys.articleChecklist(articleId) })
+
+      // Snapshot previous value
+      const previousChecklist = queryClient.getQueryData<ChecklistItem[]>(
+        queryKeys.articleChecklist(articleId)
+      )
+
+      // Optimistically update cache
+      queryClient.setQueryData<ChecklistItem[]>(
+        queryKeys.articleChecklist(articleId),
+        (old) =>
+          old?.map((item) =>
+            item.id === itemId ? { ...item, completed: !completed, completion: null } : item
+          )
+      )
+
+      return { previousChecklist }
     },
-    onError: (error) => {
+    onError: (error, _variables, context) => {
+      // Rollback on error
+      if (context?.previousChecklist) {
+        queryClient.setQueryData(
+          queryKeys.articleChecklist(articleId),
+          context.previousChecklist
+        )
+      }
       toast.error(error instanceof Error ? error.message : 'Failed to update checklist')
+    },
+    onSettled: () => {
+      // Refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: queryKeys.articleChecklist(articleId) })
     },
   })
 
@@ -671,19 +699,17 @@ export default function ArticleDetailPage() {
                   queryClient.invalidateQueries({ queryKey: queryKeys.article(articleId) })
                 }
                 aiGenerateButton={
-                  article.keywords ? (
-                    <AIGenerateDropdown
-                      keyword={article.keywords.keyword_text}
-                      companyName={article.companies.name}
-                      contentType={article.content_type}
-                      onStream={(content) => {
-                        editorRef.current?.streamContent(content)
-                      }}
-                      onInsert={(content, mode) => {
-                        editorRef.current?.insertContent(content, mode)
-                      }}
-                    />
-                  ) : undefined
+                  <AIGenerateDropdown
+                    keyword={article.keywords?.keyword_text || article.title}
+                    companyName={article.companies.name}
+                    contentType={article.content_type}
+                    onStream={(content) => {
+                      editorRef.current?.streamContent(content)
+                    }}
+                    onInsert={(content, mode) => {
+                      editorRef.current?.insertContent(content, mode)
+                    }}
+                  />
                 }
               />
             </TabsContent>

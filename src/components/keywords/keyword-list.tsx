@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Check, MoreHorizontal, Trash2, FileText, ExternalLink } from 'lucide-react'
+import { Check, MoreHorizontal, Trash2, FileText, ExternalLink, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { ConvertKeywordDialog } from './convert-keyword-dialog'
+import { EditKeywordDialog } from './edit-keyword-dialog'
 import { CONTENT_TYPES } from '@/lib/constants/content-types'
 import { STAGE_LABELS, STAGE_COLORS, type ArticleStage } from '@/lib/constants/stages'
 import { useToast } from '@/hooks/use-toast'
@@ -34,6 +35,7 @@ interface Keyword {
   suggested_title: string | null
   content_type: 'seo' | 'blog'
   month_year: string
+  notes?: string | null
   is_used: boolean
   used_at: string | null
   company_id: string
@@ -59,6 +61,7 @@ export function KeywordList({ keywords, showUsed = false, onRefresh }: KeywordLi
   const { toast } = useToast()
   const isMobile = useIsMobile()
   const [convertingKeyword, setConvertingKeyword] = useState<Keyword | null>(null)
+  const [editingKeyword, setEditingKeyword] = useState<Keyword | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const handleDelete = async (keyword: Keyword) => {
@@ -189,6 +192,10 @@ export function KeywordList({ keywords, showUsed = false, onRefresh }: KeywordLi
                   <DropdownMenuContent align="end">
                     {!keyword.is_used && (
                       <>
+                        <DropdownMenuItem onClick={() => setEditingKeyword(keyword)}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setConvertingKeyword(keyword)}>
                           <Check className="mr-2 h-4 w-4" />
                           Convert to Article
@@ -219,6 +226,18 @@ export function KeywordList({ keywords, showUsed = false, onRefresh }: KeywordLi
           }}
           onConverted={() => {
             setConvertingKeyword(null)
+            onRefresh?.()
+          }}
+        />
+
+        <EditKeywordDialog
+          keyword={editingKeyword}
+          open={!!editingKeyword}
+          onOpenChange={(open) => {
+            if (!open) setEditingKeyword(null)
+          }}
+          onUpdated={() => {
+            setEditingKeyword(null)
             onRefresh?.()
           }}
         />
@@ -316,6 +335,10 @@ export function KeywordList({ keywords, showUsed = false, onRefresh }: KeywordLi
                   <DropdownMenuContent align="end">
                     {!keyword.is_used && (
                       <>
+                        <DropdownMenuItem onClick={() => setEditingKeyword(keyword)}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setConvertingKeyword(keyword)}>
                           <Check className="mr-2 h-4 w-4" />
                           Convert to Article
@@ -347,6 +370,18 @@ export function KeywordList({ keywords, showUsed = false, onRefresh }: KeywordLi
         }}
         onConverted={() => {
           setConvertingKeyword(null)
+          onRefresh?.()
+        }}
+      />
+
+      <EditKeywordDialog
+        keyword={editingKeyword}
+        open={!!editingKeyword}
+        onOpenChange={(open) => {
+          if (!open) setEditingKeyword(null)
+        }}
+        onUpdated={() => {
+          setEditingKeyword(null)
           onRefresh?.()
         }}
       />

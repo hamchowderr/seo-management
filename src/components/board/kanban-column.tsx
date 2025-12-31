@@ -24,8 +24,14 @@ export function KanbanColumn({ stage, articles, onCardClick }: KanbanColumnProps
   const stageLabel = STAGE_LABELS[stage]
 
   return (
-    <div className="flex h-full min-w-0 flex-1 flex-col md:min-w-[180px]">
-      <div className="bg-background/50 flex items-center justify-between border-b p-2">
+    <div
+      ref={setNodeRef}
+      className={cn(
+        'flex h-full min-w-0 flex-1 flex-col md:min-w-[180px] rounded-lg transition-all duration-200',
+        isOver && 'bg-primary/10 ring-primary ring-2 ring-inset'
+      )}
+    >
+      <div className="bg-background/50 flex items-center justify-between border-b p-2 rounded-t-lg">
         <div className="flex items-center gap-2">
           <div
             className="h-2.5 w-2.5 shrink-0 rounded-full"
@@ -38,11 +44,7 @@ export function KanbanColumn({ stage, articles, onCardClick }: KanbanColumnProps
         </Badge>
       </div>
       <div
-        ref={setNodeRef}
-        className={cn(
-          'flex-1 overflow-hidden rounded-b-lg transition-all duration-200',
-          isOver && 'bg-primary/10 ring-primary ring-2 ring-inset'
-        )}
+        className="flex-1 overflow-hidden rounded-b-lg"
       >
         <ScrollArea className="h-full">
           <SortableContext items={articles.map((a) => a.id)} strategy={verticalListSortingStrategy}>

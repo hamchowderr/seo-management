@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import {
   DndContext,
   DragOverlay,
-  closestCenter,
+  rectIntersection,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -237,7 +237,7 @@ export function KanbanBoard({ companyId, monthYear, contentType }: KanbanBoardPr
     <>
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCenter}
+        collisionDetection={rectIntersection}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >

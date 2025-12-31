@@ -34,7 +34,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-// PUT /api/companies/[id] - Update company
+// PUT/PATCH /api/companies/[id] - Update company
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params
@@ -95,3 +95,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+// PATCH handler - alias to PUT for client compatibility
+export { PUT as PATCH }
