@@ -11,8 +11,8 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^2.0.56",
-    "@ai-sdk/react": "^2.0.117",
+    "@ai-sdk/anthropic": "^2.0.115",
+    "@ai-sdk/react": "^2.0.295",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
@@ -49,7 +49,7 @@
     "@tiptap/pm": "^3.14.0",
     "@tiptap/react": "^3.14.0",
     "@tiptap/starter-kit": "^3.14.0",
-    "ai": "^5.0.115",
+    "ai": "^5.0.292",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
